@@ -1,0 +1,12 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "RequestAuthentication"
+metadata:
+  name: jwt-example
+  namespace: '{{ bakend_project}}'
+spec:
+  selector:
+    matchLabels:
+      app: productpage
+  jwtRules:
+  - issuer: 'https://keycloak-sso.apps.{{ domain }}/auth/realms/threescale-realm'
+    jwksUri: 'https://keycloak-sso.apps.{{ domain }}/auth/realms/threescale-realm/protocol/openid-connect/certs'

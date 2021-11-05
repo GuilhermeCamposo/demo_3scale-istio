@@ -1,0 +1,24 @@
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: 3scale-project-group
+  namespace: 3scale-project
+spec:
+  targetNamespaces:
+  - 3scale-project
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/3scale-operator.3scale-project: ""
+  name: 3scale-operator
+  namespace: 3scale-project
+spec:
+  channel: threescale-2.11
+  installPlanApproval: Automatic
+  name: 3scale-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: 3scale-operator.v0.7.0

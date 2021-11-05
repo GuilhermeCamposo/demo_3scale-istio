@@ -1,0 +1,48 @@
+- name: Evaluate if 3scale-project namespace exists
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: 3scale-project
+    state: present
+
+- name: Evaluate if 3scale Operator exist
+  k8s:
+    state: present
+    src: template/3scale-operator.yml.j2
+
+- name: Waiting for 3scale Subscription to complete
+  shell: |
+    set -o pipefail && oc get csv -n 3scale-project | grep 3scale-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash
+
+- name: Install Minio
+  include_tasks:
+    file: ./tasks/minio.yml
+
+- name: Evaluate if 3scale Operator s3 secret exists
+  k8s:
+    state: present
+    src: template/s3-secret.yml.j2
+
+- name: Evaluate if 3scale instance exists
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'template/3scale-instance.yml.j2') | from_yaml }}"
+
+- name: Wait for 3scale pods to be ready
+  k8s_info:
+    api_version: apps.3scale.net/v1alpha1
+    kind: APIManager
+    namespace: 3scale-project
+    name: example-apimanager
+  register: api_m
+  until:
+    - api_m is defined
+    - api_m.resources[0].status.deployments.ready[14] is defined
+  retries: 20
+  delay: 30

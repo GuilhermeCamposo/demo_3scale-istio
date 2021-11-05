@@ -1,0 +1,25 @@
+- name: Evaluate if Minio Stateful exists
+  when:  minio_stateful|bool
+  k8s:
+    state: present
+    src: template/minio-stateful.yml.j2
+
+- name: Evaluate if Minio Stateless exists
+  when: not minio_stateful|bool
+  k8s:
+    state: present
+    src: template/minio-stateless.yml.j2
+
+- name: Waiting for Minio instance to be running
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: 3scale-project
+    label_selectors:
+      - app = minio
+    field_selectors:
+      - status.phase=Running
+  register: r_minio_pod
+  retries: 20
+  delay: 10
+  until: r_minio_pod.resources | list | length == 1

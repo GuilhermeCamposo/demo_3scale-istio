@@ -1,0 +1,14 @@
+- name: Evaluate if Kiali subscription exists
+  k8s:
+    state: present
+    src: template/kiali-subscription.yml.j2
+
+- name: Waiting for Kiali subscription to complete
+  shell: |
+    set -o pipefail && oc get csv | grep kiali-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash

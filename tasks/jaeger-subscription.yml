@@ -1,0 +1,14 @@
+- name: Evaluate if Jaeger subscription exists
+  k8s:
+    state: present
+    src: template/jaeger-subscription.yml.j2
+
+- name: Waiting for Jaeger subscription to complete
+  shell: |
+    set -o pipefail && oc get csv | grep jaeger-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash
