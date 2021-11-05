@@ -4,43 +4,43 @@
     insecure_skip_tls_verify: true
     config_location: /tmp/
     operators_project: openshift-operators
-    minio_stateful: true
+    minio_stateful: false
     rhsso_admin_user_name: admin
     rhsso_admin_user_password: admin
-    3scale_project: 3scale-project
+    threescale_project: 3scale-project
     ossm_project: istio-system
   tasks:
     - name: login as super user with token on OpenShift 4
-      command: "oc login --token={{ ocp_token }}  --server=https://api.{{ domain }}:6443 --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
+      command: "oc login --token={{ token }}  --server=https://api.{{ domain }}:6443 --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
       when:
-       - ocp_token is defined
-       - ocp_token is not none
-       - ocp_token|trim() != ""
+       - token is defined
+       - token is not none
+       - token|trim() != ""
       ignore_errors: no
 
-    - name: Evaluate if {{ operators_project }} namespace exists
-      k8s:
-        api_version: v1
-        kind: Namespace
-        name: '{{ operators_project }}'
-        state: present
-
-    - name: Install Jaeger Operator
-      include_tasks:
-        file: ./tasks/jaeger-subscription.yml
-
-    - name: Install Kiali Operator
-      include_tasks:
-        file: ./tasks/kiali-subscription.yml
-
-    - name: Install Service Mesh
-      include_tasks:
-        file: ./tasks/ossm.yml
+    # - name: Evaluate if {{ operators_project }} namespace exists
+    #   k8s:
+    #     api_version: v1
+    #     kind: Namespace
+    #     name: '{{ operators_project }}'
+    #     state: present
+    #
+    # - name: Install Jaeger Operator
+    #   include_tasks:
+    #     file: ./tasks/jaeger-subscription.yml
+    #
+    # - name: Install Kiali Operator
+    #   include_tasks:
+    #     file: ./tasks/kiali-subscription.yml
+    #
+    # - name: Install Service Mesh
+    #   include_tasks:
+    #     file: ./tasks/ossm.yml
 
     - name: Install 3scale
       include_tasks:
         file: ./tasks/3scale.yml
 
-    - name: Install RHSSO
-      include_tasks:
-        file: ./tasks/rhsso.yml
+    # - name: Install RHSSO
+    #   include_tasks:
+    #     file: ./tasks/rhsso.yml

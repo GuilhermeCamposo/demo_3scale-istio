@@ -2,13 +2,13 @@
   when:  minio_stateful|bool
   k8s:
     state: present
-    src: template/minio-stateful.yml.j2
+    resource_definition: "{{ lookup('template', 'minio-stateful.yml.j2') }}"
 
 - name: Evaluate if Minio Stateless exists
   when: not minio_stateful|bool
   k8s:
     state: present
-    src: template/minio-stateless.yml.j2
+    resource_definition: "{{ lookup('template', 'minio-stateless.yml.j2') }}"
 
 - name: Waiting for Minio instance to be running
   k8s_info:

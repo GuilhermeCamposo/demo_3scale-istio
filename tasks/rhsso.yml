@@ -16,13 +16,13 @@
     -p SSO_ADMIN_USERNAME={{rhsso_admin_user_name}}
     -p SSO_ADMIN_PASSWORD={{rhsso_admin_password}}
     -p MEMORY_LIMIT=2Gi
-    | oc create -n {{ 3scale_project }} -f -
+    | oc create -n {{ threescale_project }} -f -
 
 - name: wait for rhsso to be ready
   k8s_facts:
     api_version: v1
     kind: Pod
-    namespace: '{{ 3scale_project }}'
+    namespace: '{{ threescale_project }}'
     label_selectors:
       - application = rhsso
       - deploymentconfig = rhsso
@@ -36,7 +36,7 @@
 
 - name: Get rhsso admin token
   uri:
-    url: 'https://secure-rhsso-{{ 3scale_project }}.apps.{{ domain }}/auth/realms/master/protocol/openid-connect/token'
+    url: 'https://secure-rhsso-{{ threescale_project }}.apps.{{ domain }}/auth/realms/master/protocol/openid-connect/token'
     validate_certs: false
     method: POST
     body:
@@ -54,7 +54,7 @@
 
 - name: Create Threescale Realm
   uri:
-    url: 'https://secure-rhsso-{{ 3scale_project }}.apps.{{ domain }}/auth/admin/realms'
+    url: 'https://secure-rhsso-{{ threescale_project }}.apps.{{ domain }}/auth/admin/realms'
     method: POST
     body_format: json
     headers:

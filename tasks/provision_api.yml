@@ -4,7 +4,7 @@
     api_version: v1
     kind: Secret
     name: "system-seed"
-    namespace: "{{ 3scale_project }}"
+    namespace: "{{ threescale_project }}"
   register: _3scale_secret
   retries: 3
   delay: 5
@@ -42,7 +42,7 @@
     api_version: capabilities.3scale.net/v1beta1
     kind: Backend
     name: "bookinfo-istio-backend"
-    namespace: "{{ 3scale_project }}"
+    namespace: "{{ threescale_project }}"
   register: _wait_backend
   retries: 8
   delay: 15
@@ -65,7 +65,7 @@
     api_version: capabilities.3scale.net/v1beta1
     kind: Product
     name: "bookinfo-api-product"
-    namespace: "{{ 3scale_project }}"
+    namespace: "{{ threescale_project }}"
   register: _wait_product
   retries: 8
   delay: 15
@@ -177,7 +177,7 @@
     api_version: capabilities.3scale.net/v1beta1
     kind: Product
     name: "bookinfo-istio-product"
-    namespace: "{{ 3scale_project }}"
+    namespace: "{{ threescale_project }}"
   register: _wait_istio_product
   retries: 8
   delay: 15

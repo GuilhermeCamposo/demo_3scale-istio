@@ -2,7 +2,7 @@ apiVersion: apps.3scale.net/v1alpha1
 kind: APIManager
 metadata:
   name: example-apimanager
-  namespace: 3scale-project
+  namespace: '{{ threescale_project }}'
 spec:
   wildcardDomain: 'apps.{{ domain }}'
   resourceRequirementsEnabled: false

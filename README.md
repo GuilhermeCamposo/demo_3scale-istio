@@ -1,14 +1,15 @@
 # 3scale and Service Mesh Demo
 
-## Requirements
+## Environment
 
-- >= OCP 4.8
-- oc  >= OCP 4.8 installed in the controller host
+- OCP 4.9
+- oc  >= OCP 4.9 installed in the controller host
+- 3scale 2.11
 
 
 ## How to run the playbook
 
-    ansible-playbook -e ocp_token= -e domain= install-demo.yml
+    ansible-playbook -e token= -e domain= install-demo.yml
 
 
 ## Relax Limits

@@ -2,13 +2,13 @@
   k8s:
     api_version: v1
     kind: Namespace
-    name: 3scale-project
+    name: '{{ threescale_project }}'
     state: present
 
 - name: Evaluate if 3scale Operator exist
   k8s:
     state: present
-    src: template/3scale-operator.yml.j2
+    resource_definition: "{{ lookup('template', '3scale-operator.yml.j2') }}"
 
 - name: Waiting for 3scale Subscription to complete
   shell: |
@@ -27,12 +27,12 @@
 - name: Evaluate if 3scale Operator s3 secret exists
   k8s:
     state: present
-    src: template/s3-secret.yml.j2
+    resource_definition: "{{ lookup('template', 's3-secret.yml.j2') }}"
 
 - name: Evaluate if 3scale instance exists
   k8s:
     state: present
-    definition: "{{ lookup('template', 'template/3scale-instance.yml.j2') | from_yaml }}"
+    resource_definition: "{{ lookup('template', '3scale-instance.yml.j2') }}"
 
 - name: Wait for 3scale pods to be ready
   k8s_info:
