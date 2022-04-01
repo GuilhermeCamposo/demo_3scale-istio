@@ -1,0 +1,24 @@
+- name: Evaluate Kiali subscription
+  k8s:
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: kiali-operator
+        namespace: openshift-operators
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: kiali-ossm
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Wait Kiali subscription completion
+  shell: set -o pipefail && oc get csv | grep kiali-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash

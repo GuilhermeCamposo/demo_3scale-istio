@@ -1,0 +1,60 @@
+- name: Evaluate if {{ operators_project }} namespace exists
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: '{{ operators_project }}'
+    state: present
+
+- name: Jaeger Operator Role
+  include_role:
+    name: jaeger
+
+- name: Kiali Operator Role
+  include_role:
+    name: kiali
+
+- name: Evaluate if Service Mesh subscription exists
+  k8s:
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: redhat-service-mesh-operator
+        namespace: openshift-operators
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: servicemeshoperator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Waiting for Service Mesh Subscription to Complete
+  shell: set -o pipefail && oc get csv | grep servicemeshoperator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash
+
+- name: Evaluate if istio-system namespace exists
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: istio-system
+    state: present
+
+- name: Evaluate if Istio Control Plane instance exists
+  k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'ossm-control-plane.yml.j2') }}"
+
+- name: Waiting for Service Mesh instance to be ready
+  shell: set -o pipefail && oc get servicemeshcontrolplane full-install -n istio-system | grep full-install
+  register: install_status
+  until: "'ComponentsReady' in install_status.stdout"
+  retries: 30
+  delay: 30
+  args:
+    executable: /bin/bash

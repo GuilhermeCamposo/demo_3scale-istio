@@ -3,10 +3,10 @@ apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: 3scale-project-group
-  namespace: '{{ threescale_project }}'
+  namespace: '{{ demo_project }}'
 spec:
   targetNamespaces:
-  - '{{ threescale_project }}'
+  - '{{ demo_project }}'
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -14,7 +14,7 @@ metadata:
   labels:
     operators.coreos.com/3scale-operator.3scale-project: ""
   name: 3scale-operator
-  namespace: '{{ threescale_project }}'
+  namespace: '{{ demo_project }}'
 spec:
   channel: threescale-2.11
   installPlanApproval: Automatic

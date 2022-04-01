@@ -1,10 +1,9 @@
----
 - name: Retrieve 3scale Admin URL and token from
   k8s_info:
     api_version: v1
     kind: Secret
     name: "system-seed"
-    namespace: "{{ threescale_project }}"
+    namespace: "{{ demo_project }}"
   register: _3scale_secret
   retries: 3
   delay: 5
@@ -36,13 +35,12 @@
     state: present
     resource_definition: "{{ lookup('template', 'threescale-bookinfo-backend.yaml.j2') }}"
 
-
 - name: Wait to synchronize the  Backend CRD with 3scale
   k8s_info:
     api_version: capabilities.3scale.net/v1beta1
     kind: Backend
     name: "bookinfo-istio-backend"
-    namespace: "{{ threescale_project }}"
+    namespace: "{{ demo_project }}"
   register: _wait_backend
   retries: 8
   delay: 15
@@ -59,13 +57,12 @@
     state: present
     resource_definition: "{{ lookup('template', 'threescale-bookinfo-product.yaml.j2') }}"
 
-
 - name: Wait to synchronize the  Product CRD with 3scale
   k8s_info:
     api_version: capabilities.3scale.net/v1beta1
     kind: Product
     name: "bookinfo-api-product"
-    namespace: "{{ threescale_project }}"
+    namespace: "{{ demo_project }}"
   register: _wait_product
   retries: 8
   delay: 15
@@ -100,10 +97,8 @@
     content: text
   register: _tenant_developer_id_parse
 
-
 - name: Set _tenant_developer_id
   set_fact: _tenant_developer_id={{ _tenant_developer_id_parse.matches[0].id }}
-
 
 - name: Get BookInfo API Basic Application Plan
   uri:
@@ -126,16 +121,12 @@
 - name: Set _bookinfo_application_plan_id
   set_fact: _bookinfo_application_plan_id={{ _bookinfo_application_plan_id_parse.matches[0].id }}
 
-
-
 - name: Debug API & Account Ids
   debug:
     msg:
     - "BookInfo API Product id: {{ _bookinfo_api_product_id }}"
     - "Developer Account id: {{ _tenant_developer_id }}"
     - "BookInfo API Basic Application Plan id: {{ _bookinfo_application_plan_id }}"
-
-
 
 - name: Create BookInfo API Basic Application for Developer Account
   uri:
@@ -165,7 +156,6 @@
   register: _3scale_proxy_deploy_response
   until: _3scale_proxy_deploy_response is defined
 
-
 # Create 3scale Mixer Adapter Custom Resources & BookInfo Istio API in 3scale
 - name: Create BookInfo Istio Product
   k8s:
@@ -177,7 +167,7 @@
     api_version: capabilities.3scale.net/v1beta1
     kind: Product
     name: "bookinfo-istio-product"
-    namespace: "{{ threescale_project }}"
+    namespace: "{{ demo_project }}"
   register: _wait_istio_product
   retries: 8
   delay: 15
@@ -192,7 +182,6 @@
 - name: Extract Product Id from Product CRD
   set_fact:
     _bookinfo_istio_product_id: '{{_wait_istio_product.resources[0].status.productId }}'
-
 
 - name: Get BookInfo Istio API Basic Application Plan
   uri:

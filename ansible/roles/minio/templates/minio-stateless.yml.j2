@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minio
-  namespace: '{{ threescale_project }}'
+  namespace: '{{ demo_project }}'
 spec:
   replicas: 1
   selector:
@@ -37,7 +37,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: minio
-  namespace: '{{ threescale_project }}'
+  namespace: '{{ demo_project }}'
 spec:
   ports:
   - port: 9000
@@ -53,7 +53,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: minio
-  namespace: '{{ threescale_project }}'
+  namespace: '{{ demo_project }}'
 spec:
   port:
     targetPort: 9000

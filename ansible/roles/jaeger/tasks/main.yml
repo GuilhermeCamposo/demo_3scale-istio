@@ -1,0 +1,25 @@
+- name: Evaluate Jaeger subscription
+  k8s:
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: jaeger-product
+        namespace: openshift-operators
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: jaeger-product
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+
+- name: Wai Jaeger subscription completion
+  shell: set -o pipefail && oc get csv | grep jaeger-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash

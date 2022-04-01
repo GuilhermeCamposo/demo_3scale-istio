@@ -1,8 +1,8 @@
-- name: Evaluate if 3scale-project namespace exists
+- name: Evaluate '{{ demo_project }}' namespace
   k8s:
     api_version: v1
     kind: Namespace
-    name: '{{ threescale_project }}'
+    name: '{{ demo_project }}'
     state: present
 
 - name: Evaluate if 3scale Operator exist
@@ -11,8 +11,7 @@
     resource_definition: "{{ lookup('template', '3scale-operator.yml.j2') }}"
 
 - name: Waiting for 3scale Subscription to complete
-  shell: |
-    set -o pipefail && oc get csv -n 3scale-project | grep 3scale-operator
+  shell: set -o pipefail && oc get csv -n 3scale-project | grep 3scale-operator
   register: install_status
   until: "'Succeeded' in install_status.stdout"
   retries: 20
@@ -21,8 +20,8 @@
     executable: /bin/bash
 
 - name: Install Minio
-  include_tasks:
-    file: ./tasks/minio.yml
+  include_role:
+    name: minio
 
 - name: Evaluate if 3scale Operator s3 secret exists
   k8s:
