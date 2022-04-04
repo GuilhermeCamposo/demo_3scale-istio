@@ -1,0 +1,43 @@
+- name: Evaluate bookinfo namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: bookinfo
+    state: present
+
+- name: Evaluate bookinfo namespace
+  k8s:
+    api_version: maistra.io/v1
+    kind: ServiceMeshMemberRoll
+    state: present
+    definition:
+      metadata:
+        name: default
+        namespace: '{{ ossm_project }}'
+      spec:
+        members:
+        - bookinfo
+
+- name: Evaluate bookinfo
+  k8s:
+    namespace: bookinfo
+    state: present
+    resource_definition: "{{ lookup('file', 'bookinfo.yaml') }}"
+
+- name: Evaluate bookinfo-gateway
+  k8s:
+    namespace: bookinfo
+    state: present
+    resource_definition: "{{ lookup('file', 'bookinfo-gateway.yaml') }}"
+
+- name: Evaluate destination-rule-all
+  k8s:
+    namespace: bookinfo
+    state: present
+    resource_definition: "{{ lookup('file', 'destination-rule-all.yaml') }}"
+
+# - name: Evaluate destination-rule-all-mtls
+#   k8s:
+#     namespace: bookinfo
+#     state: present
+#     resource_definition: "{{ lookup('file', 'destination-rule-all-mtls.yaml') }}"

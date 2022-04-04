@@ -13,7 +13,7 @@
   include_role:
     name: kiali
 
-- name: Evaluate if Service Mesh subscription exists
+- name: Evaluate Service Mesh subscription
   k8s:
     state: present
     kind: Subscription
@@ -29,7 +29,7 @@
         source: redhat-operators
         sourceNamespace: openshift-marketplace
 
-- name: Waiting for Service Mesh Subscription to Complete
+- name: Wait Service Mesh Subscription Completion
   shell: set -o pipefail && oc get csv | grep servicemeshoperator
   register: install_status
   until: "'Succeeded' in install_status.stdout"
@@ -38,20 +38,20 @@
   args:
     executable: /bin/bash
 
-- name: Evaluate if istio-system namespace exists
+- name: Evaluate istio-system namespace
   k8s:
     api_version: v1
     kind: Namespace
     name: istio-system
     state: present
 
-- name: Evaluate if Istio Control Plane instance exists
+- name: Evaluate Istio Control Plane instance
   k8s:
     state: present
-    resource_definition: "{{ lookup('template', 'ossm-control-plane.yml.j2') }}"
+    resource_definition: "{{ lookup('template', 'control-plane.yml.j2') }}"
 
 - name: Waiting for Service Mesh instance to be ready
-  shell: set -o pipefail && oc get servicemeshcontrolplane full-install -n istio-system | grep full-install
+  shell: set -o pipefail && oc get servicemeshcontrolplane {{ sm_instance_name }} -n istio-system | grep {{ sm_instance_name }}
   register: install_status
   until: "'ComponentsReady' in install_status.stdout"
   retries: 30

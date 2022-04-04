@@ -4,10 +4,9 @@
     insecure_skip_tls_verify: true
     operators_project: openshift-operators
     minio_stateful: false
-    rhsso_admin_user_name: admin
-    rhsso_admin_user_password: admin
     demo_project: 3scale-project
     ossm_project: istio-system
+    sm_instance_name: basic
   tasks:
 
     - name: Define domain
@@ -22,14 +21,18 @@
        - token|trim() != ""
       ignore_errors: no
 
-    # - name: Service Mesh Role
+    - name: Service Mesh Role
+      include_role:
+        name: service-mesh
+
+    # - name: Install 3scale
     #   include_role:
-    #     name: service-mesh
+    #     name: 3scale
+    #
+    # - name: Install RHSSO
+    #   include_role:
+    #     name: rhsso
 
-    - name: Install 3scale
+    - name: Install Bookinfo
       include_role:
-        name: 3scale
-
-    - name: Install RHSSO
-      include_role:
-        name: rhsso
+        name: bookinfo
