@@ -14,7 +14,7 @@
   k8s_info:
     api_version: v1
     kind: Pod
-    namespace: 3scale-project
+    namespace: '{{ demo_project }}'
     label_selectors:
       - app = minio
     field_selectors:

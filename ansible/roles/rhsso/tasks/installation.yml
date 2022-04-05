@@ -1,0 +1,48 @@
+- name: Evaluate SSO Subscription
+  k8s:
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: rhsso-operator
+        namespace: '{{ demo_project }}'
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: rhsso-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+        startingCSV: rhsso-operator.7.5.1-opr-010
+
+- name: Wait SSO Subscription Completion
+  shell: set -o pipefail && oc get csv -n {{ demo_project }} | grep rhsso-operator
+  register: install_status
+  until: "'Succeeded' in install_status.stdout"
+  retries: 20
+  delay: 15
+  args:
+    executable: /bin/bash
+
+- name: Evaluate SSO Instance
+  k8s:
+    state: present
+    kind: Keycloak
+    api_version: keycloak.org/v1alpha1
+    definition:
+      metadata:
+        name: example-keycloak
+        namespace: '{{ demo_project }}'
+      spec:
+        externalAccess:
+          enabled: true
+        instances: 1
+
+- name: Wait SSO to be ready
+  shell: set -o pipefail && oc get pods -l app=keycloak -l component=keycloak -n {{ demo_project }} | grep keycloak-0
+  register: readiness
+  until: "'1/1' in readiness.stdout"
+  retries: 30
+  delay: 30
+  args:
+    executable: /bin/bash
