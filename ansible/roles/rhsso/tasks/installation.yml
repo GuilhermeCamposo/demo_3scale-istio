@@ -1,3 +1,22 @@
+- name: Evaluate '{{ rhsso_project }}' namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: '{{ rhsso_project }}'
+    state: present
+
+- name: Evaluate '{{ rhsso_project }}' OperatorGroup
+  k8s:
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    definition:
+      metadata:
+        name: rhsso-group
+        namespace: '{{ rhsso_project }}'
+      spec:
+        targetNamespaces:
+        - '{{ rhsso_project }}'
+
 - name: Evaluate SSO Subscription
   k8s:
     state: present
@@ -6,7 +25,7 @@
     definition:
       metadata:
         name: rhsso-operator
-        namespace: '{{ demo_project }}'
+        namespace: '{{ rhsso_project }}'
       spec:
         channel: stable
         installPlanApproval: Automatic
@@ -16,7 +35,7 @@
         startingCSV: rhsso-operator.7.5.1-opr-010
 
 - name: Wait SSO Subscription Completion
-  shell: set -o pipefail && oc get csv -n {{ demo_project }} | grep rhsso-operator
+  shell: set -o pipefail && oc get csv -n {{ rhsso_project }} | grep rhsso-operator
   register: install_status
   until: "'Succeeded' in install_status.stdout"
   retries: 20
@@ -32,14 +51,14 @@
     definition:
       metadata:
         name: example-keycloak
-        namespace: '{{ demo_project }}'
+        namespace: '{{ rhsso_project }}'
       spec:
         externalAccess:
           enabled: true
         instances: 1
 
 - name: Wait SSO to be ready
-  shell: set -o pipefail && oc get pods -l app=keycloak -l component=keycloak -n {{ demo_project }} | grep keycloak-0
+  shell: set -o pipefail && oc get pods -l app=keycloak -l component=keycloak -n {{ rhsso_project }} | grep keycloak-0
   register: readiness
   until: "'1/1' in readiness.stdout"
   retries: 30

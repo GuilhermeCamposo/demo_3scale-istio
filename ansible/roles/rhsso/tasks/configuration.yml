@@ -2,7 +2,7 @@
   k8s_info:
     kind: Secret
     name:  credential-example-keycloak
-    namespace: '{{ demo_project }}'
+    namespace: '{{ rhsso_project }}'
     api_version: v1
   register: r_credential
   until:
@@ -21,7 +21,7 @@
 
 - name: Set SSO host
   set_fact:
-    sso_host: 'keycloak-{{ demo_project }}.apps.{{ domain }}'
+    sso_host: 'keycloak-{{ rhsso_project }}.apps.{{ domain }}'
 
 - name: Get SSO admin token
   uri:

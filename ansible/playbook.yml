@@ -4,7 +4,8 @@
     insecure_skip_tls_verify: true
     operators_project: openshift-operators
     minio_stateful: false
-    demo_project: demo-infra
+    threescale_project: demo-3scale
+    rhsso_project: demo-rhsso
     ossm_project: istio-system
     sm_instance_name: basic
   tasks:
