@@ -30,9 +30,9 @@
       include_role:
         name: 3scale
 
-    - name: Install RHSSO
-      include_role:
-        name: rhsso
+    # - name: Install RHSSO
+    #   include_role:
+    #     name: rhsso
 
     # - name: Install Bookinfo
     #   include_role:

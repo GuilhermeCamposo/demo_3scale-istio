@@ -1,0 +1,17 @@
+apiVersion: capabilities.3scale.net/v1alpha1
+kind: Tenant
+metadata:
+  name: copy
+  namespace: '{{ threescale_project }}'
+spec:
+  email: admin@example.com
+  masterCredentialsRef:
+    name: system-seed
+  organizationName: copy
+  passwordCredentialsRef:
+    name: copy-admin-secret
+  systemMasterUrl: 'https://master.apps.{{ domain }}'
+  tenantSecretRef:
+    name: copy-tenant-secret
+    namespace: '{{ threescale_project }}'
+  username: admin

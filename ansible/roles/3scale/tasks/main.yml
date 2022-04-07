@@ -45,3 +45,13 @@
     - api_m.resources[0].status.deployments.ready[14] is defined
   retries: 20
   delay: 30
+
+- name: Evaluate Copy Tenant Secret
+  k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'copy-admin-secret.yml.j2') }}"
+
+- name: Evaluate Copy Tenant
+  k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'copy-tenant.yml.j2') }}"    
